@@ -1,6 +1,6 @@
 # Exercise 01: World Database SQL Practice
 
-- Name:
+- Name: Houston Asher-Laws
 - Course: Database for Analytics
 - Module: 1
 - Database Used: World Database
@@ -27,8 +27,8 @@
 Why were these data types selected?
 
 ### Answer
-_Write your explanation here._
-
+Population would be a int data type becuase its all in whole numbers.
+LifeExpectancy would be a Decimal data type because a person can have an age like 45.9
 ### Screenshot
 _Show the table structure or DESCRIBE output._
 
@@ -46,7 +46,7 @@ DESCRIBE country;
 Why do you think this data type was selected?
 
 ### Answer
-_Write your explanation here._
+The data type used is Smallint and it uses less storage then Int. It is also usded for a range of numbers. 
 
 ### Screenshot
 
@@ -54,7 +54,7 @@ _Write your explanation here._
 DESCRIBE country;
 ```
 
-![Q2 Screenshot](screenshots/q2_indepyear.png)
+![Q2 Screenshot](screenshots/q1_datatypes.png)
 
 ---
 
@@ -64,7 +64,7 @@ DESCRIBE country;
 Explain why your proposed data type might be better in some situations.
 
 ### Answer
-_Write your explanation here._
+You could use int that would be good data type in case you needed more storage that Smallint can not provide you. It can provide dates far in the past and far in the Future if needed.
 
 ---
 
