@@ -1,8 +1,8 @@
 # Exercise 04: Advanced SQL, Jupyter, and Visualization
 
-- Name:
+- Name: Houston Asher-Laws
 - Course: Database for Analytics
-- Module:
+- Module: 04
 - Database Used: World Database
 - Tools Used: PostgreSQL, SQLAlchemy, Pandas, Jupyter Notebooks
 
@@ -31,12 +31,20 @@ Considering the World database, write a SQL statement that will **display the na
 ### SQL
 
 ```sql
--- Your SQL here
+Select c.name as Countries_twoOrMore_Languages,
+Count (cl.language) as Number_Languages_Spoken
+From country c
+Join countrylanguage cl
+ON c.code = cl.countrycode
+where cl.isofficial = 'T'
+Group by c.name
+Having Count(cl.language) > 2
+Order by Number_Languages_Spoken DESC;
 ```
 
 ### Screenshot
 
-![Q1 Screenshot](screenshots/q1_official_language_counts.png)
+![Q1 Screenshot](screenshots/Exercise04/Question1.png)
 
 ---
 
@@ -49,12 +57,43 @@ After the `create_engine` command is executed, **what are the three statements r
 ### Python Code
 
 ```python
-# Your three Python statements here
+## first statement
+import os
+import sqlalchemy
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+load_dotenv()
+
+engine = create_engine(os.getenv("DATABASE_URL"))
+
+## Second Statement
+pd.read_sql_query("SELECT 1 AS ok;", engine)
+
+## Thrid Statement 
+sql = """
+Select c.name as Countries_twoOrMore_Languages,
+Count (cl.language) as Number_Languages_Spoken
+From country c
+Join countrylanguage cl
+ON c.code = cl.countrycode
+where cl.isofficial = 'T'
+Group by c.name
+Having Count(cl.language) > 2
+Order by Number_Languages_Spoken DESC;
+"""
+
+df = pd.read_sql_query(sql, engine)
+
+df
 ```
 
 ### Screenshot
 
-![Q2 Screenshot](screenshots/q2_jupyter_query_results.png)
+![Q2 Screenshot](screenshots/Exercise04/Question2.png)
 
 ---
 
@@ -69,9 +108,20 @@ Using **Jupyter Notebooks**, write the Python code needed to produce the followi
 ### Python Code
 
 ```python
-# Your Python code here
+plt.figure(figsize=(10, 6))
+
+plt.bar(df["countries_twoormore_languages"], 
+        df["number_languages_spoken"])
+
+plt.title("Countries with More Than Two Official Languages")
+plt.xlabel("Country")
+plt.ylabel("Number of Official Languages")
+
+plt.xticks(rotation=90)
+plt.tight_layout()
+plt.show()
 ```
 
 ### Screenshot
 
-![Q3 Screenshot](screenshots/q3_countries_graph.png)
+![Q3 Screenshot](screenshots/Exercise04/question3.png)
