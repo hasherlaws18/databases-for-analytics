@@ -1,8 +1,8 @@
 # Exercise 05: SQLDA Database - Dates, Data Quality, Arrays, and JSON
 
-- Name:
+- Name: Houston Asher-Laws
 - Course: Database for Analytics
-- Module:
+- Module: 05
 - Database Used:  `sqlda` (Sample Datasets)
 - Tools Used: PostgreSQL (pgAdmin or psql)
 
@@ -42,12 +42,15 @@ year
 ### SQL
 
 ```sql
--- Your SQL here
+SELECT DISTINCT EXTRACT(YEAR FROM sent_date) AS year
+FROM emails
+ORDER BY year;
+
 ```
 
 ### Screenshot
 
-![Q1 Screenshot](screenshots/q1_email_years.png)
+![Q1 Screenshot](screenshots/Exercise05/Question1.png)
 
 ---
 
@@ -65,12 +68,17 @@ count   year
 ### SQL
 
 ```sql
--- Your SQL here
+SELECT 
+    COUNT(*) AS count,
+    EXTRACT(YEAR FROM sent_date)::INT AS year
+FROM emails
+GROUP BY year
+ORDER BY year;
 ```
 
 ### Screenshot
 
-![Q2 Screenshot](screenshots/q2_message_count_by_year.png)
+![Q2 Screenshot](screenshots/Exercise05/Question2.png)
 
 ---
 
@@ -86,12 +94,19 @@ Only include emails that contain **both** a sent date and an opened date.
 ### SQL
 
 ```sql
--- Your SQL here
+SELECT 
+    sent_date,
+    opened_date,
+    opened_date - sent_date AS interval
+FROM emails
+WHERE sent_date IS NOT NULL
+  AND opened_date IS NOT NULL;
+
 ```
 
 ### Screenshot
 
-![Q3 Screenshot](screenshots/q3_sent_opened_interval.png)
+![Q3 Screenshot](screenshots/Exercise05/Question3.png)
 
 ---
 
@@ -102,12 +117,19 @@ Using the `sqlda` database, write the SQL needed to show emails that contain an 
 ### SQL
 
 ```sql
--- Your SQL here
+SELECT 
+    sent_date,
+    opened_date
+FROM emails
+WHERE opened_date IS NOT NULL
+  AND sent_date IS NOT NULL
+  AND opened_date < sent_date;
+
 ```
 
 ### Screenshot
 
-![Q4 Screenshot](screenshots/q4_opened_before_sent.png)
+![Q4 Screenshot](screenshots/Exercise05/Question4.png)
 
 ---
 
@@ -119,8 +141,7 @@ After looking at the data, **why is this the case?**
 
 ### Answer
 
-_Write your explanation here._
-
+The send date is consistently recorded at 15:00 due to how time zones are handled in the dataset. Because of this standardized send time, some emails appear to have been opened before they were sent. In reality, the send time does not reflect the actual moment the email was sent, while the opened date captures the true timestamp of when the email was opened.
 ### Screenshot (if requested by instructor)
 
 ![Q5 Screenshot](screenshots/q5_explain_date_issue.png)
@@ -160,7 +181,11 @@ CREATE TEMP TABLE customer_dealership_distance AS (
 
 ### Answer
 
-_Write your explanation here._
+The first temporary table creates a table that calculates a geometric point for each customer using the point() function and their longitude and latitude values.
+
+The second temporary table does the same thing, but for each dealership.
+
+The third temporary table uses a CROSS JOIN to create every possible pair between customers and dealerships. It then uses the <@> operator to calculate the distance between each customer’s location point and each dealership’s location point.
 
 ---
 
@@ -177,12 +202,18 @@ For example - dealership 1 is below:
 ### SQL
 
 ```sql
--- Your SQL here
+SELECT 
+    dealership_id,
+    ARRAY_AGG(last_name || ',' || first_name ORDER BY last_name, first_name) 
+        AS salespeople
+FROM salespeople
+GROUP BY dealership_id
+ORDER BY dealership_id;
 ```
 
 ### Screenshot
 
-![Q7 Screenshot](screenshots/q7_salespeople_array_by_dealership.png)
+![Q7 Screenshot](screenshots/Exercise05/Question%207.png)
 
 ---
 
@@ -202,12 +233,23 @@ Reference image:
 ### SQL
 
 ```sql
--- Your SQL here
+SELECT
+    d.dealership_id,
+    d.state,
+    ARRAY_AGG(s.last_name || ',' || s.first_name 
+    ORDER BY s.last_name, s.first_name) AS salespeople,
+    COUNT(s.salesperson_id) AS num_salespeople
+FROM dealerships d
+JOIN salespeople s
+   ON d.dealership_id = s.dealership_id
+GROUP BY d.dealership_id, d.state
+ORDER BY d.state;
+
 ```
 
 ### Screenshot
 
-![Q8 Screenshot](screenshots/q8_salespeople_array_state_count.png)
+![Q8 Screenshot](screenshots/Exercise05/Question8.png)
 
 ---
 
@@ -218,12 +260,14 @@ Using the `sqlda` database, write the SQL needed to convert the **customers** ta
 ### SQL
 
 ```sql
--- Your SQL here
+SELECT row_to_json(c) AS customers_json
+FROM customers c;
+
 ```
 
 ### Screenshot
 
-![Q9 Screenshot](screenshots/q9_customers_to_json.png)
+![Q9 Screenshot](screenshots/Exercise05/Question9.png)
 
 ---
 
@@ -244,9 +288,23 @@ Reference image:
 ### SQL
 
 ```sql
--- Your SQL here
+SELECT json_agg(row_to_json(t)) AS dealerships_json
+FROM (
+    SELECT
+        d.dealership_id,
+        d.state,
+        ARRAY_AGG(s.last_name || ',' || s.first_name
+        ORDER BY s.last_name, s.first_name) AS salespeople,
+        COUNT(*) AS num_salespeople
+    FROM dealerships d
+    JOIN salespeople s
+      ON s.dealership_id = d.dealership_id
+    GROUP BY d.dealership_id, d.state
+    ORDER BY d.state, d.dealership_id
+) t;
+
 ```
 
 ### Screenshot
 
-![Q10 Screenshot](screenshots/q10_salespeople_array_to_json.png)
+![Q10 Screenshot](screenshots/Exercise05/Question10.png)
