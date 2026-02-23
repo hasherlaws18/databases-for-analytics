@@ -1,7 +1,7 @@
 # Module 6 - Exercise 1: Creating a Data Warehouse
 From the Operational Model to the Dimensional Model
 
-- Name:
+- Name: Houston Asher-Laws
 - Course: Database for Analytics
 - Module: 6
 
@@ -107,7 +107,7 @@ Save your diagram image in this repo and embed it below.
 
 #### Diagram
 
-![Star Schema Diagram](star-schema.png)
+![Star Schema Diagram](screenshots/Exercise06/star-schema.png)
 
 ---
 
@@ -121,4 +121,4 @@ In 1-2 short paragraphs, explain:
 
 #### Design Notes
 
-_Write your design notes here._
+The Dimensions that I choose were DIM_CUSTOMER, DIM_PART AND DIM_DATE. The DIM_DATE dimension provides calendar attributes (day, month, quarter, year) that allow flexible time filtering and aggregation. The DIM_CUSTOMER stores descriptive customer attributes (name, address, zip) that support customer-level analysis and geographic reporting. The DIM_PART dimension contains product descriptors (part number, description, category) needed for filtering and grouping. The fact table grain is defined as One row per day per customer per part so choosing a more detailed grain would violate the requirement, while choosing a more aggregated grain would prevent answering product-level questions. The Design supports answering the questions of how many of part ax12 were sold on September 2, 1994, How much did customer 124 spend last year and How many appliance items were sold during the third quarter of 1994.
